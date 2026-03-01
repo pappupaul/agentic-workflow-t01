@@ -16,6 +16,8 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y gh jq
       - name: Gather recent activity
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           # note: this script is intentionally basic; adjust filters as needed
           gh issue list --state open --json title,number --jq '.[] | "- #\(.number) \(.title)"' > /tmp/issues.txt
