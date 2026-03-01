@@ -29,7 +29,7 @@ jobs:
           cat /tmp/prs.txt >> /tmp/summary.md
       - name: Create or update issue
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           ISSUE_TITLE="Daily Status"
           existing=$(gh issue list --search "\"$ISSUE_TITLE\" in:title" --limit 1 --json number --jq '.[0].number')
