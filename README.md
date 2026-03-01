@@ -16,6 +16,9 @@ minimal web service; no linting/test support is needed for the workflow.
 
 You can inspect the workflow file at `.github/workflows/daily_status.yml`.
 
+### README auto-update workflow
+A second agentic workflow (`.github/workflows/update-readme.lock.yml`) runs on every push to **main**. It compares recent commits against the current README, detects documentation drift, and opens a pull request with corrections when needed. If the README is already accurate, the workflow takes no action.
+
 ---
 
 **Notes for the demo presentation**
