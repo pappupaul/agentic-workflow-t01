@@ -1,3 +1,9 @@
+import os
+import sys
+
+# make sure repository root is on the import path (needed in some CI environments)
+sys.path.insert(0, os.path.abspath(os.getcwd()))
+
 import app
 
 
