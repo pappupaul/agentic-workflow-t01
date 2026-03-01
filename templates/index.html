@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Python App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --surface-hover: #22222f;
+      --border: #2a2a3a;
+      --text: #e4e4ed;
+      --text-muted: #8888a0;
+      --accent: #6c5ce7;
+      --accent-glow: rgba(108,92,231,.35);
+      --green: #00cec9;
+      --red: #ff6b6b;
+      --orange: #fdcb6e;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(108,92,231,.08) 0%, transparent 100%);
+    }
+    header h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--green);
+      background: rgba(0,206,201,.1);
+      border: 1px solid rgba(0,206,201,.25);
+      padding: .3rem .75rem;
+      border-radius: 999px;
+    }
+    .status-badge .dot {
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .card:hover { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .card h2 .icon { font-size: 1.15rem; }
+
+    /* ── Health Info ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: .75rem;
+    }
+    .info-item {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+    }
+    .info-item .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: .25rem; }
+    .info-item .value { font-size: .9rem; font-weight: 500; word-break: break-all; }
+
+    /* ── Forms & Inputs ── */
+    .form-row {
+      display: flex;
+      gap: .75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    input, textarea {
+      flex: 1;
+      min-width: 160px;
+      padding: .6rem .85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: .875rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 90px; font-size: .8rem; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+    button {
+      padding: .6rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s, opacity .2s;
+    }
+    button:active { transform: scale(.97); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { opacity: .85; }
+    .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(255,107,107,.3); }
+    .btn-danger:hover { background: rgba(255,107,107,.1); }
+    .btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface-hover); color: var(--text); }
+
+    /* ── Items List ── */
+    .items-list { display: flex; flex-direction: column; gap: .5rem; }
+    .item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      transition: background .15s;
+    }
+    .item-row:hover { background: var(--surface-hover); }
+    .item-meta { display: flex; flex-direction: column; }
+    .item-name { font-weight: 500; font-size: .9rem; }
+    .item-desc { font-size: .75rem; color: var(--text-muted); margin-top: .15rem; }
+    .item-time { font-size: .7rem; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: .85rem; }
+
+    /* ── Echo Response ── */
+    .echo-output {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: .8rem;
+      white-space: pre-wrap;
+      color: var(--green);
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    /* ── Endpoints List ── */
+    .endpoint-list { display: flex; flex-direction: column; gap: .5rem; }
+    .endpoint {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .55rem .85rem;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .method {
+      font-size: .7rem;
+      font-weight: 700;
+      padding: .2rem .5rem;
+      border-radius: 4px;
+      min-width: 52px;
+      text-align: center;
+    }
+    .method.get { background: rgba(0,206,201,.15); color: var(--green); }
+    .method.post { background: rgba(108,92,231,.2); color: var(--accent); }
+    .method.delete { background: rgba(255,107,107,.15); color: var(--red); }
+    .endpoint .path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: .82rem; }
+    .endpoint .desc { font-size: .75rem; color: var(--text-muted); margin-left: auto; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      header { padding: 1rem; }
+      .container { padding: 1.25rem 1rem; }
+      .endpoint .desc { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🚀 Test Python App</h1>
+    <span class="status-badge" id="statusBadge"><span class="dot"></span> Loading…</span>
+  </header>
+
+  <div class="container">
+    <!-- Health Card -->
+    <div class="card" id="healthCard">
+      <h2><span class="icon">💡</span> Server Info</h2>
+      <div class="info-grid" id="healthGrid">
+        <div class="info-item"><div class="label">Status</div><div class="value">Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- API Reference -->
+    <div class="card">
+      <h2><span class="icon">📡</span> API Endpoints</h2>
+      <div class="endpoint-list">
+        <div class="endpoint"><span class="method get">GET</span><span class="path">/api/health</span><span class="desc">Health check</span></div>
+        <div class="endpoint"><span class="method get">GET</span><span class="path">/api/items</span><span class="desc">List items</span></div>
+        <div class="endpoint"><span class="method post">POST</span><span class="path">/api/items</span><span class="desc">Create item</span></div>
+        <div class="endpoint"><span class="method delete">DELETE</span><span class="path">/api/items/:id</span><span class="desc">Delete item</span></div>
+        <div class="endpoint"><span class="method post">POST</span><span class="path">/api/echo</span><span class="desc">Echo JSON</span></div>
+      </div>
+    </div>
+
+    <!-- CRUD Card -->
+    <div class="card">
+      <h2><span class="icon">📦</span> Items <span style="font-weight:400;font-size:.8rem;color:var(--text-muted);margin-left:auto" id="itemCount"></span></h2>
+      <div class="form-row">
+        <input type="text" id="itemName" placeholder="Item name" />
+        <input type="text" id="itemDesc" placeholder="Description (optional)" />
+        <button class="btn-primary" onclick="createItem()">Add Item</button>
+      </div>
+      <div class="items-list" id="itemsList">
+        <div class="empty-state">No items yet — add one above!</div>
+      </div>
+    </div>
+
+    <!-- Echo Card -->
+    <div class="card">
+      <h2><span class="icon">🔁</span> Echo Tester</h2>
+      <textarea id="echoInput" placeholder='{"message": "hello world"}'></textarea>
+      <div style="display:flex;gap:.5rem;margin-top:.75rem">
+        <button class="btn-primary" onclick="sendEcho()">Send</button>
+        <button class="btn-secondary" onclick="clearEcho()">Clear</button>
+      </div>
+      <div class="echo-output" id="echoOutput" style="margin-top:.75rem"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── Health ──
+    async function fetchHealth() {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        document.getElementById('statusBadge').innerHTML =
+          '<span class="dot"></span> ' + data.status.charAt(0).toUpperCase() + data.status.slice(1);
+        document.getElementById('healthGrid').innerHTML = `
+          <div class="info-item"><div class="label">Status</div><div class="value" style="color:var(--green)">${data.status}</div></div>
+          <div class="info-item"><div class="label">Timestamp</div><div class="value">${new Date(data.timestamp).toLocaleString()}</div></div>
+          <div class="info-item"><div class="label">Python</div><div class="value">${data.python_version.split(' ')[0]}</div></div>
+          <div class="info-item"><div class="label">Platform</div><div class="value">${data.platform}</div></div>
+        `;
+      } catch {
+        document.getElementById('statusBadge').innerHTML = '<span class="dot" style="background:var(--red)"></span> Offline';
+      }
+    }
+
+    // ── Items ──
+    async function loadItems() {
+      const res = await fetch('/api/items');
+      const data = await res.json();
+      const el = document.getElementById('itemsList');
+      const count = document.getElementById('itemCount');
+      count.textContent = data.length ? `${data.length} item${data.length > 1 ? 's' : ''}` : '';
+      if (!data.length) {
+        el.innerHTML = '<div class="empty-state">No items yet — add one above!</div>';
+        return;
+      }
+      el.innerHTML = data.map(i => `
+        <div class="item-row">
+          <div class="item-meta">
+            <span class="item-name">${esc(i.name)}</span>
+            ${i.description ? `<span class="item-desc">${esc(i.description)}</span>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem">
+            <span class="item-time">${new Date(i.created_at).toLocaleTimeString()}</span>
+            <button class="btn-danger" onclick="deleteItem(${i.id})">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function createItem() {
+      const name = document.getElementById('itemName').value.trim();
+      if (!name) return;
+      const desc = document.getElementById('itemDesc').value.trim();
+      await fetch('/api/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description: desc }),
+      });
+      document.getElementById('itemName').value = '';
+      document.getElementById('itemDesc').value = '';
+      loadItems();
+    }
+
+    async function deleteItem(id) {
+      await fetch(`/api/items/${id}`, { method: 'DELETE' });
+      loadItems();
+    }
+
+    // ── Echo ──
+    async function sendEcho() {
+      const raw = document.getElementById('echoInput').value.trim();
+      let body;
+      try { body = JSON.parse(raw); } catch { body = raw; }
+      const res = await fetch('/api/echo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      const out = document.getElementById('echoOutput');
+      out.style.display = 'block';
+      out.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function clearEcho() {
+      document.getElementById('echoOutput').style.display = 'none';
+      document.getElementById('echoInput').value = '';
+    }
+
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // ── Init ──
+    fetchHealth();
+    loadItems();
+  </script>
+</body>
+</html>
