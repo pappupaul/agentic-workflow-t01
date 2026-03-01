@@ -1,0 +1,40 @@
+name: Daily Status Report
+
+on:
+  schedule:
+    # 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  report:
+    name: Generate and post daily summary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GitHub CLI
+        run: |
+          sudo apt update && sudo apt install -y gh jq
+      - name: Gather recent activity
+        run: |
+          # note: this script is intentionally basic; adjust filters as needed
+          gh issue list --state open --json title,number --jq '.[] | "- #\(.number) \(.title)"' > /tmp/issues.txt
+          gh pr list --state merged --json title,number --jq '.[] | "- #\(.number) \(.title)"' > /tmp/prs.txt
+          echo "# Daily Status Report" > /tmp/summary.md
+          echo "" >> /tmp/summary.md
+          echo "## Open Issues" >> /tmp/summary.md
+          cat /tmp/issues.txt >> /tmp/summary.md
+          echo "" >> /tmp/summary.md
+          echo "## Recently Merged PRs" >> /tmp/summary.md
+          cat /tmp/prs.txt >> /tmp/summary.md
+      - name: Create or update issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_TITLE="Daily Status"
+          existing=$(gh issue list --search "\"$ISSUE_TITLE\" in:title" --limit 1 --json number --jq '.[0].number')
+          if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+            gh issue edit "$existing" --body-file /tmp/summary.md
+          else
+            gh issue create --title "$ISSUE_TITLE" --body-file /tmp/summary.md
+          fi
